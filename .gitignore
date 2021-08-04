@@ -1,3 +1,12 @@
 /.DS_STORE
 /icu4c-maint*
 /product
+icu4c-release-69-1-build
+icu4c-release-69-1-catalyst-build
+icu4c-release-69-1-ios.dev-build
+icu4c-release-69-1-ios.sim-build
+
+icu4c-release-69-1-build.success
+icu4c-release-69-1-catalyst-build.success
+icu4c-release-69-1-ios.dev-build.success
+icu4c-release-69-1-ios.sim-build.success

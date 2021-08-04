@@ -4,13 +4,11 @@ set -e
 THREAD_COUNT=$(sysctl hw.ncpu | awk '{print $2}')
 HOST_ARC=$( uname -m )
 XCODE_ROOT=$( xcode-select -print-path )
-ICU_VER=maint/maint-69
 ################## SETUP END
 DEVSYSROOT=$XCODE_ROOT/Platforms/iPhoneOS.platform/Developer
 SIMSYSROOT=$XCODE_ROOT/Platforms/iPhoneSimulator.platform/Developer
 MACSYSROOT=$XCODE_ROOT/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
 
-ICU_VER_NAME=icu4c-${ICU_VER//\//-}
 BUILD_DIR="$( cd "$( dirname "./" )" >/dev/null 2>&1 && pwd )"
 INSTALL_DIR="$BUILD_DIR/product"
 
@@ -19,14 +17,18 @@ if [ "$HOST_ARC" = "arm64" ]; then
 else
 	BUILD_ARC=$HOST_ARC
 fi
+
+################### VERSION SETUP
+pushd icu
+LATEST_ICU_RELEASE=$( curl --silent "https://api.github.com/repos/unicode-org/icu/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' )
+echo "Latest icu release: $LATEST_ICU_RELEASE"
+git checkout $LATEST_ICU_RELEASE
+ICU_VER_NAME=icu4c-${LATEST_ICU_RELEASE//\//-}
+popd
+
 ################### BUILD FOR MAC OSX
 ICU_BUILD_FOLDER=$ICU_VER_NAME-build
 ICU4C_FOLDER=icu/icu4c
-
-#explicit 69.1
-pushd icu
-git reset --hard 0e7b4428866f3133b4abba2d932ee3faa708db1d
-popd
 
 if [ ! -f $ICU_BUILD_FOLDER.success ]; then
 echo preparing build folder $ICU_BUILD_FOLDER ...
